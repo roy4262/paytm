@@ -1,1 +1,16 @@
-node_modules
+# Node modules
+node_modules/
+
+# Build output
+dist/
+
+# Local env files
+.env
+
+# IDE/editor files
+.vscode/
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
