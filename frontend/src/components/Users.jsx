@@ -6,10 +6,14 @@ import axios from "axios";
 const Users = () => {
   const [users, setUsers] = useState([]);
   const [filter, setFilter] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
+        setLoading(true);
+        setError("");
         const response = await axios.get(
           "http://localhost:4000/api/v1/user/bulk?filter=" + filter,
           {
@@ -21,7 +25,18 @@ const Users = () => {
         setUsers(response.data.user || []);
       } catch (error) {
         console.error("Error fetching users:", error);
+        if (error.response?.status === 411) {
+          setError("Authentication failed. Please login again.");
+        } else if (error.code === "ECONNREFUSED") {
+          setError(
+            "Cannot connect to server. Please check if the server is running."
+          );
+        } else {
+          setError("Failed to fetch users. Please try again.");
+        }
         setUsers([]);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -39,7 +54,21 @@ const Users = () => {
           className="w-full px-2 py-1 border rounded border-slate-200"
         />
       </div>
+
+      {loading && <div className="text-center py-4">Loading users...</div>}
+
+      {error && (
+        <div className="text-red-500 text-sm py-2 bg-red-50 border border-red-200 rounded px-3">
+          {error}
+        </div>
+      )}
+
       <div>
+        {!loading && !error && users.length === 0 && (
+          <div className="text-gray-500 text-center py-4">
+            No users found. {filter && "Try a different search term."}
+          </div>
+        )}
         {users.map((user) => (
           <User key={user._id} user={user} />
         ))}
@@ -47,6 +76,8 @@ const Users = () => {
     </>
   );
 };
+
+import PropTypes from "prop-types";
 
 function User({ user }) {
   const navigate = useNavigate();
@@ -59,23 +90,31 @@ function User({ user }) {
             {user.firstName[0]}
           </div>
         </div>
-        <div className="flex flex-col justify-center h-ful">
+        <div className="flex flex-col justify-center h-full">
           <div>
             {user.firstName} {user.lastName}
           </div>
         </div>
       </div>
 
-      <div className="flex flex-col justify-center h-ful">
+      <div className="flex flex-col justify-center h-full">
         <Button
           label={"Send Money"}
           onClick={() => {
-            navigate("/send?id=" + user._id + "&name=" + user.firstName);
+            navigate(`/send?id=${user._id}&name=${user.firstName}`);
           }}
         />
       </div>
     </div>
   );
 }
+
+User.propTypes = {
+  user: PropTypes.shape({
+    _id: PropTypes.string.isRequired,
+    firstName: PropTypes.string.isRequired,
+    lastName: PropTypes.string.isRequired,
+  }).isRequired,
+};
 
 export default Users;

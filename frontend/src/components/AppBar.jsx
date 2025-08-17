@@ -5,21 +5,42 @@ import { useNavigate } from "react-router-dom";
 const AppBar = () => {
   const [user, setUser] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
 
   useEffect(() => {
-    axios
-      .get("http://localhost:4000/api/v1/user/me", {
-        headers: {
-          Authorization: "Bearer " + localStorage.getItem("token"),
-        },
-      })
-      .then((res) => setUser(res.data.firstName))
-      .catch((error) => {
+    const fetchUserData = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          navigate("/signin");
+          return;
+        }
+
+        const response = await axios.get(
+          "http://localhost:4000/api/v1/user/me",
+          {
+            headers: {
+              Authorization: "Bearer " + token,
+            },
+          }
+        );
+        setUser(response.data.firstName);
+      } catch (error) {
         console.error("Error fetching user data:", error);
-      });
-  }, []);
+        if (error.response?.status === 411 || error.response?.status === 500) {
+          // Token is invalid or expired
+          localStorage.removeItem("token");
+          navigate("/signin");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, [navigate]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -37,7 +58,7 @@ const AppBar = () => {
 
   const handleSignOut = () => {
     localStorage.removeItem("token");
-    navigate("/signin");
+    navigate("/");
   };
 
   const handleMouseEnter = () => {
@@ -56,13 +77,15 @@ const AppBar = () => {
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        <div className="flex flex-col justify-center h-full mr-4">{user}</div>
+        <div className="flex flex-col justify-center h-full mr-4">
+          {loading ? "Loading..." : user || "User"}
+        </div>
         <div
           className="rounded-full h-12 w-12 bg-slate-200 flex justify-center mt-1 mr-2 cursor-pointer hover:bg-slate-300 transition-colors"
           onClick={() => setShowDropdown(!showDropdown)}
         >
           <div className="flex flex-col justify-center h-full text-xl">
-            {user[0]}
+            {user ? user[0]?.toUpperCase() : "?"}
           </div>
         </div>
 
