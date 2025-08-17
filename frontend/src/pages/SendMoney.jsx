@@ -45,9 +45,12 @@ const SendMoney = () => {
               </div>
               <button
                 onClick={() => {
+                  const base =
+                    import.meta.env.VITE_API_BASE_URL ||
+                    "http://localhost:4000";
                   axios
                     .post(
-                      "http://localhost:4000/api/v1/account/transfer",
+                      `${base}/api/v1/account/transfer`,
                       {
                         to: id,
                         amount,

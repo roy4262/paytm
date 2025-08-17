@@ -19,17 +19,23 @@ router.post("/signup", async (req, res) => {
   if (!validate.success) {
     return res.status(411).json({ msg: "invalid data" });
   }
-  const existingUser = await UserModel.findOne({ username: req.body.username });
+
+  // Normalize username to avoid case/whitespace issues
+  const normalizedUsername = (username || "").trim().toLowerCase();
+
+  const existingUser = await UserModel.findOne({
+    username: normalizedUsername,
+  });
   if (existingUser) {
     return res.status(411).json({ msg: "user alredy exists" });
   }
 
   try {
     const user = await UserModel.create({
-      username,
+      username: normalizedUsername,
       password,
-      firstName,
-      lastName,
+      firstName: (firstName || "").trim(),
+      lastName: (lastName || "").trim(),
     });
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
 
@@ -59,7 +65,13 @@ router.post("/signin", async (req, res) => {
     return res.status(411).json({ msg: "invalid credentials" });
   }
   try {
-    const user = await UserModel.findOne({ username, password });
+    // Normalize to match how we store at signup
+    const normalizedUsername = (username || "").trim().toLowerCase();
+
+    const user = await UserModel.findOne({
+      username: normalizedUsername,
+      password,
+    });
     if (user) {
       const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
       res.status(200).json({ msg: "user logged in", token, id: user._id });

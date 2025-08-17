@@ -6,18 +6,16 @@ const Balance = () => {
   useEffect(() => {
     const fetchBalance = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:4000/api/v1/account/balance",
-          {
-            headers: {
-              Authorization: "Bearer " + localStorage.getItem("token"),
-            },
-          }
-        );
+        const base =
+          import.meta.env.VITE_API_BASE_URL || "http://localhost:4000";
+        const response = await axios.get(`${base}/api/v1/account/balance`, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
+        });
         setbalance(response.data.balance);
       } catch (error) {
         console.error("Error fetching balance:", error);
-        // Handle error appropriately - maybe set balance to 0 or show error message
         setbalance(0);
       }
     };

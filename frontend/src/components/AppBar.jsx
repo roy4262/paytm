@@ -9,8 +9,9 @@ const AppBar = () => {
   const dropdownRef = useRef(null);
 
   useEffect(() => {
+    const base = import.meta.env.VITE_API_BASE_URL || "http://localhost:4000";
     axios
-      .get("http://localhost:4000/api/v1/user/me", {
+      .get(`${base}/api/v1/user/me`, {
         headers: {
           Authorization: "Bearer " + localStorage.getItem("token"),
         },

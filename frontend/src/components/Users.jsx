@@ -10,8 +10,10 @@ const Users = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
+        const base =
+          import.meta.env.VITE_API_BASE_URL || "http://localhost:4000";
         const response = await axios.get(
-          "http://localhost:4000/api/v1/user/bulk?filter=" + filter,
+          `${base}/api/v1/user/bulk?filter=${encodeURIComponent(filter)}`,
           {
             headers: {
               Authorization: "Bearer " + localStorage.getItem("token"),

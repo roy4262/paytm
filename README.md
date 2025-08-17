@@ -4,57 +4,83 @@ This repository contains a full-stack Paytm Clone, including both frontend and b
 
 ## Overview
 
-- **Frontend:** Built with React and Vite, provides user authentication, dashboard, money transfer, and transaction result pages.
-- **Backend:** Built with Node.js, Express, and MongoDB, handles user management, authentication, and transaction APIs.
+- **Frontend**: React + Vite client
+- **Backend**: Node.js + Express + MongoDB API
 
-## Features
+## Prerequisites
 
-- User registration and login
-- View account balance
-- List all users
-- Send money to other users
-- Transaction history and result feedback
+- Node.js 18+
+- npm (or yarn/pnpm)
+- MongoDB running locally (or an Atlas URI)
+- Docker (optional, for MongoDB)
 
-## Folder Structure
+## Quick Start
 
-- `frontend/` – React-based client application
-- `backend/` – Express.js server and API
+### 1) Backend
 
-## Getting Started
+1. Create environment file:
+   - Copy `backend/.env.example` to `backend/.env` and edit as needed
+2. Install and run:
+   ```bash
+   cd backend
+   npm install
+   npm start
+   ```
+3. Server runs on http://localhost:4000
 
-### Prerequisites
+Env variables (backend):
 
-- Node.js (v18 or above)
-- npm or yarn
-- Docker (for MongoDB, optional)
+- `MONGO_URL` (e.g., mongodb://127.0.0.1:27017/paytm)
+- `JWT_SECRET` (set a strong secret)
 
-### Setup
+### 2) Frontend
 
-#### Backend
+1. Create environment file:
+   - Copy `frontend/.env.example` to `frontend/.env`
+2. Install and run:
+   ```bash
+   cd frontend
+   npm install
+   npm run dev
+   ```
+3. App runs on the Vite dev server (URL shown in terminal, typically http://localhost:5173)
+
+Env variables (frontend):
+
+- `VITE_API_BASE_URL` (default http://localhost:4000)
+
+## API Base URL in Frontend
+
+The frontend currently calls backend endpoints using hardcoded `http://localhost:4000` URLs in some components.
+If you deploy to another host/port, update these to use `VITE_API_BASE_URL` or let me refactor to a centralized API client.
+
+Files using direct URLs (examples):
+
+- `frontend/src/pages/Signin.jsx`
+- `frontend/src/pages/Signup.jsx`
+- `frontend/src/components/Balance.jsx`
+- `frontend/src/components/Users.jsx`
+- `frontend/src/components/AppBar.jsx`
+- `frontend/src/pages/SendMoney.jsx`
+
+## Optional: MongoDB with Docker
 
 ```bash
-cd backend
-npm install
-npm start
+# From repo root
+docker run -d --name paytm-mongo -p 27017:27017 mongo:6
 ```
 
-#### Frontend
+## Scripts
 
-```bash
-cd frontend
-npm install
-npm run dev
-```
+- Backend: `npm start` (in `backend/`)
+- Frontend: `npm run dev` (in `frontend/`)
 
-#### MongoDB (Docker)
+## Troubleshooting
 
-```bash
-docker build -t paytm-mongo .
-docker run -d -p 27017:27017 --name paytm-mongodb paytm-mongo
-```
-
-## Environment Variables
-
-- Add a `.env` file in `backend/` for sensitive configuration (e.g., JWT secret, MongoDB URI).
+- Ensure backend shows "backend running on port 4000"
+- Verify Mongo connectivity: `MONGO_URL` reachable and correct
+- In browser DevTools, confirm API calls point to the correct host/port
 
 ## License
+
+For educational purposes.
