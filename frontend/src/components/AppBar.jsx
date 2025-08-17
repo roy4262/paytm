@@ -1,4 +1,4 @@
-import axios from "axios";
+import api from "../apiClient";
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -18,14 +18,7 @@ const AppBar = () => {
           return;
         }
 
-        const response = await axios.get(
-          "http://localhost:4000/api/v1/user/me",
-          {
-            headers: {
-              Authorization: "Bearer " + token,
-            },
-          }
-        );
+        const response = await api.get("/user/me");
         setUser(response.data.firstName);
       } catch (error) {
         console.error("Error fetching user data:", error);

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "./Button";
-import axios from "axios";
+import api from "../apiClient";
 
 const Users = () => {
   const [users, setUsers] = useState([]);
@@ -14,14 +14,7 @@ const Users = () => {
       try {
         setLoading(true);
         setError("");
-        const response = await axios.get(
-          "http://localhost:4000/api/v1/user/bulk?filter=" + filter,
-          {
-            headers: {
-              Authorization: "Bearer " + localStorage.getItem("token"),
-            },
-          }
-        );
+        const response = await api.get("/user/bulk", { params: { filter } });
         setUsers(response.data.user || []);
       } catch (error) {
         console.error("Error fetching users:", error);

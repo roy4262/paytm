@@ -1,5 +1,5 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
-import axios from "axios";
+import api from "../apiClient";
 import { useState } from "react";
 
 const SendMoney = () => {
@@ -45,20 +45,11 @@ const SendMoney = () => {
               </div>
               <button
                 onClick={() => {
-                  axios
-                    .post(
-                      "http://localhost:4000/api/v1/account/transfer",
-                      {
-                        to: id,
-                        amount,
-                      },
-                      {
-                        headers: {
-                          Authorization:
-                            "Bearer " + localStorage.getItem("token"),
-                        },
-                      }
-                    )
+                  api
+                    .post("/account/transfer", {
+                      to: id,
+                      amount,
+                    })
                     .then((res) => {
                       navigate(
                         "/result?msg=" +

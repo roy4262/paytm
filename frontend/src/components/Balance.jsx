@@ -1,4 +1,4 @@
-import axios from "axios";
+import api from "../apiClient";
 import { useEffect, useState } from "react";
 
 const Balance = () => {
@@ -11,14 +11,7 @@ const Balance = () => {
       try {
         setLoading(true);
         setError("");
-        const response = await axios.get(
-          "http://localhost:4000/api/v1/account/balance",
-          {
-            headers: {
-              Authorization: "Bearer " + localStorage.getItem("token"),
-            },
-          }
-        );
+        const response = await api.get("/account/balance");
         setbalance(response.data.balance);
       } catch (error) {
         console.error("Error fetching balance:", error);

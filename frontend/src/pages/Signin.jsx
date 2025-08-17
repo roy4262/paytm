@@ -5,7 +5,7 @@ import { Heading } from "../components/Heading";
 import InputBox from "../components/InputBox";
 import SubHeading from "../components/SubHeading";
 import { useState } from "react";
-import axios from "axios";
+import api from "../apiClient";
 
 const Signin = () => {
   const navigate = useNavigate();
@@ -27,7 +27,7 @@ const Signin = () => {
     setLoading(true);
 
     try {
-      const res = await axios.post("http://localhost:4000/api/v1/user/signin", {
+      const res = await api.post("/user/signin", {
         username: username.trim(),
         password: password.trim(),
       });
