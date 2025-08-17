@@ -65,10 +65,27 @@ Files using direct URLs (examples):
 
 ## Optional: MongoDB with Docker
 
+Simple standalone MongoDB:
+
 ```bash
 # From repo root
 docker run -d --name paytm-mongo -p 27017:27017 mongo:6
 ```
+
+Replica-set (for transactions) example using included Dockerfile:
+
+```bash
+# This Dockerfile configures a Mongo image with a replica set
+# Used only if you need transactions locally
+# Build and run
+docker build -t paytm-mongo-rs -f Dockerfile .
+docker run -d --name paytm-mongo-rs -p 27017:27017 paytm-mongo-rs
+```
+
+## Detailed Docs
+
+- Backend: `backend/README.md`
+- Frontend: `frontend/README.md`
 
 ## Scripts
 
@@ -78,8 +95,9 @@ docker run -d --name paytm-mongo -p 27017:27017 mongo:6
 ## Troubleshooting
 
 - Ensure backend shows "backend running on port 4000"
-- Verify Mongo connectivity: `MONGO_URL` reachable and correct
+- Verify Mongo connectivity: `MONGO_URL` reachable and correct (Atlas users: add your IP, ensure credentials correct)
 - In browser DevTools, confirm API calls point to the correct host/port
+- If env changes don’t take effect in frontend, restart Vite dev server
 
 ## License
 
